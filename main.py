@@ -1,35 +1,55 @@
+import time
+
+def read_input(path):
+    with open(path, 'r') as file:
+        corpus = file.read().replace('\n', '').lower()
+    return corpus
+
+def compute_sequential_ngrams(corpus, ngram_length):
+    ngrams = {}
+    for i in range(0, len(corpus) - ngram_length + 1):
+        ngram = corpus[i: i + ngram_length]
+        space_index = ngram.find(' ')
+        if space_index != -1:
+            i += space_index
+        else:
+            if ngram in ngrams:
+                ngrams[ngram] += 1
+            else:
+                ngrams[ngram] = 1
+    return ngrams
+
+
 if __name__ == '__main__':
-    print('PyCharm')
+    corpus = read_input('test.txt')
+    print(f'Corpus length: {len(corpus)}')
+
+    min_ngram_length = 2
+    max_ngram_length = 8
+    n_attempts = 10
+    n_threads = 8
+
+    seq_times = []
+    par_times = []
+
+    for j in range(min_ngram_length, max_ngram_length + 1):
+        print(f'Length: {j}')
+        beg = time.time()
+
+        for p in range(n_attempts):
+            seq_ngrams = compute_sequential_ngrams(corpus, j)
+
+        end = time.time()
+
+        duration = end - beg
+        print(f'Seq times: {duration / n_attempts:.5f}')
+        seq_times.append(duration / n_attempts)
 
 
 """
-#include <iostream>
-#include <fstream>
-#include <algorithm>
-#include <map>
-#include <omp.h>
-#include <chrono>
-#include "matplotlibcpp.h"
-#include <vector>
-namespace plt = matplotlibcpp;
 
-using namespace std;
-
-string readInput(const string& path);
-int contains(const string& str, char targetChar);
-map<string, int> computeSequentialNgrams(string data, int ngram_length, int start, int end);
-map<string, int> computeParallelNgrams(string data, int ngram_length, int n_threads);
 
 int main() {
-    string corpus = readInput("../corpus.txt");
-    cout << "Corpus length: "  << corpus.length() << endl;
-
-    std::chrono::high_resolution_clock::time_point beg, end;
-    long long int duration;
-
-    int min_ngram_length = 2;
-    int max_ngram_length = 8;
-    int n_attempts = 10;
     int n_threads = 8;
 
     vector<long long int> seq_times, par_times;
@@ -71,16 +91,6 @@ int main() {
     return 0;
 }
 
-string readInput(const string& path) {
-    ifstream file(path);
-    string str;
-    string data;
-    while (getline(file, str)) {
-        data += str;
-    }
-    transform(data.begin(), data.end(), data.begin(), [](unsigned char c){ return std::tolower(c); });
-    return data;
-}
 
 int contains(const string& str, char targetChar) {
     int index = str.find(targetChar);
