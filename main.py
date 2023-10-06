@@ -7,7 +7,9 @@ def read_input(path):
 
 def compute_sequential_ngrams(corpus, ngram_length):
     ngrams = {}
-    for i in range(0, len(corpus) - ngram_length + 1):
+    i = 0
+    n = len(corpus)
+    while i <= n - ngram_length:
         ngram = corpus[i: i + ngram_length]
         space_index = ngram.find(' ')
         if space_index != -1:
@@ -17,11 +19,12 @@ def compute_sequential_ngrams(corpus, ngram_length):
                 ngrams[ngram] += 1
             else:
                 ngrams[ngram] = 1
+        i += 1
     return ngrams
 
 
 if __name__ == '__main__':
-    corpus = read_input('test.txt')
+    corpus = read_input('corpus.txt')
     print(f'Corpus length: {len(corpus)}')
 
     min_ngram_length = 2
@@ -38,7 +41,6 @@ if __name__ == '__main__':
 
         for p in range(n_attempts):
             seq_ngrams = compute_sequential_ngrams(corpus, j)
-
         end = time.time()
 
         duration = end - beg
